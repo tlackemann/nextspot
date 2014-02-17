@@ -1,0 +1,12 @@
+# eclipse files
+.buildpath
+.project
+.settings
+
+# composer files
+composer.phar
+composer.lock
+
+# phpunit files
+tests/phpunit.xml
+

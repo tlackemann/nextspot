@@ -1,0 +1,37 @@
+{
+	"require": {
+		"facebook/php-sdk" : "*",
+		"symfony/http-foundation" : "*",
+		"thetwelvelabs/foursquare": "0.2.*",
+		"haxx-se/curl": "1.0.0",
+    "kertz/twitteroauth": "dev-master"
+	},
+	"repositories": [
+          {
+              "type": "package",
+              "package": {
+                  "name": "haxx-se/curl",
+                  "version": "1.0.0",
+                  "dist": {
+                      "url": "http://curl.haxx.se/ca/cacert.pem",
+                      "type": "file"
+                  }
+              }
+          },
+          {
+            "type": "package",
+            "package": {
+                "name": "kertz/twitteroauth",
+                "version": "master",
+                "source": {
+                    "url": "http://github.com/kertz/twitteroauth",
+                    "type": "git",
+                    "reference": "master"
+                },
+                "autoload": {
+                    "classmap": ["."]
+                }
+            }
+        }
+      ]
+}
