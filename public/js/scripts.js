@@ -40,7 +40,9 @@
 		 * Cache keys for various storage
 		 */
 		this._cacheKey = {
-			'expire': 'CACHE_KEY_EXPIRE'
+			'address': 'ns_user_address',
+			'latlng': 'ns_latlng',
+			'expire': 'ns_global_expire',
 		},
 
 		/**
@@ -172,7 +174,7 @@
 		 * @return void
 		 */
 		this.getLocation = function() {
-			if (!this.address && !this.getCache('address')) {
+			if (!this.address && !this.getCache(this._cacheKey['address'])) {
 				navigator.geolocation.getCurrentPosition(function(location) {
 					self.latitude = location.coords.latitude;
 				    self.longitude = location.coords.longitude;
@@ -190,8 +192,8 @@
 				    		}
 				    	}
 
-				    	self.setCache('address', self.address);
-				    	self.setCache('latlng', JSON.stringify({'lat': self.latitude, 'lng': self.longitude}));
+				    	self.setCache(self._cacheKey['address'], self.address);
+				    	self.setCache(self._cacheKey['latlng'], JSON.stringify({'lat': self.latitude, 'lng': self.longitude}));
 
 				    	if (self.address !== null) {
 				    		$("#location").text(self.address);
@@ -212,8 +214,8 @@
 				    });
 				});
 			} else {
-				this.address = this.getCache('address');
-				var latlng = JSON.parse(this.getCache('latlng'));
+				this.address = this.getCache(this._cacheKey['address']);
+				var latlng = JSON.parse(this.getCache(this._cacheKey['latlng']));
 				this.latitude = latlng.lat;
 				this.longitude = latlng.lng;
 			}
@@ -242,30 +244,28 @@
 		 * @return boolean
 		 */
 		this.setCache = function(key, value, expire) {
-			if (!expire) {
-				expire = Date.now() + 900000; // default 15 minutes
-			}
-			var expireDates = localStorage.getItem(this._cacheKey['expire']);
-			if (localStorage.setItem(key, value)) {
-				expireDates[key] = expire;
-				localStorage.setItem(this._cacheKey['expire'], JSON.stringify(expireDates));
-				return true;
-			} else {
-				return false;
-			}
+			expire = (expire) ? Date.now() + expire : Date.now() + 900000; // default 15 minutes
+
+			var expireDates = (localStorage.getItem(this._cacheKey['expire'])) ? JSON.parse(localStorage.getItem(this._cacheKey['expire'])) : {};
+			localStorage.setItem(key, value);
+			expireDates[key] = expire;
+			localStorage.setItem(this._cacheKey['expire'], JSON.stringify(expireDates));
+			
+			return true;
 		},
 
 		/**
 		 * Gets a cache object from localStorage based on expire time
 		 * @param string key
-		 * @return string|boolean
+		 * @return string|array|object
 		 */
 		this.getCache = function(key) {
 			var expireDates = (localStorage.getItem(this._cacheKey['expire'])) ? JSON.parse(localStorage.getItem(this._cacheKey['expire'])) : {};
-			if (localStorage.getItem(key) !== undefined && (expireDates[key] <= Date.now() || expireDates[key] == undefined)) {
+			console.log(expireDates);
+			if (localStorage.getItem(key) !== undefined && (expireDates[key] > Date.now() || expireDates[key] == undefined)) {
 				return localStorage.getItem(key);
 			}
-			return false;
+			return null;
 		},
 
 		/**

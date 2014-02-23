@@ -29,32 +29,32 @@
   </div>
 </div>
 <h4>Not what you expected? Find a nearby</h4>
-<div class="btn-group btn-group-justified">
+<ul class="nav nav-pills nav-justified">
 	{% if term != 'bar' %}
-    <div class="btn-group">
-        <a data-latlng="" class="search btn btn-default" href="{{ url('search') }}?place=bar">Bar</a>
-    </div>
+    <li>
+        <a data-latlng="" class="search" href="{{ url('search') }}?place=bar">Bar</a>
+    </li>
     {% endif %}
     {% if term != 'pub' %}
-    <div class="btn-group">
-        <a data-latlng="" class="search btn btn-default" href="{{ url('search') }}?place=pub">Pub</a>
-    </div>
+    <li>
+        <a data-latlng="" class="search" href="{{ url('search') }}?place=pub">Pub</a>
+    </li>
     {% endif %}
     {% if term != 'club' %}
-    <div class="btn-group">
-        <a data-latlng="" class="search btn btn-default" href="{{ url('search') }}?place=club">Club</a>
-    </div>
+    <li>
+        <a data-latlng="" class="search" href="{{ url('search') }}?place=club">Club</a>
+    </li>
     {% endif %}
     {% if term != 'restaurant' %}
-    <div class="btn-group">
-        <a data-latlng="" class="search btn btn-default" href="{{ url('search') }}?place=restaurant">Restaurant</a>
-    </div>
+    <li>
+        <a data-latlng="" class="search" href="{{ url('search') }}?place=restaurant">Restaurant</a>
+    </li>
     {% endif %}
     {% if term != 'random' %}
-    <div class="btn-group">
-        <a data-latlng="" class="search btn btn-default" href="{{ url('search') }}?place=random">Random</a>
-    </div>
+    <li>
+        <a data-latlng="" class="search" href="{{ url('search') }}?place=random">Random</a>
+    </li>
     {% endif %}
-</div>
+</ul>
 
 <hr/>

@@ -1,7 +1,7 @@
 <div class="jumbotron">
         <h1>Where to next?</h1>
         <p>Current location: <span id="location"></span></p>
-        <div class="btn-group btn-group-justified">
+        <!-- <div class="btn-group btn-group-justified">
             <div class="btn-group">
                 <a data-latlng="" class="search btn btn-default" href="{{ url('search') }}?place=bar">Bar</a>
             </div>
@@ -17,7 +17,24 @@
             <div class="btn-group">
                 <a data-latlng="" class="search btn btn-default" href="{{ url('search') }}?place=random">Random</a>
             </div>
-        </div>
+        </div> -->
+        <ul class="nav nav-pills nav-justified">
+            <li>
+                <a data-latlng="" class="search" href="{{ url('search') }}?place=bar">Bar</a>
+            </li>
+            <li>
+                <a data-latlng="" class="search" href="{{ url('search') }}?place=pub">Pub</a>
+            </li>
+            <li>
+                <a data-latlng="" class="search" href="{{ url('search') }}?place=club">Club</a>
+            </li>
+            <li>
+                <a data-latlng="" class="search" href="{{ url('search') }}?place=restaurant">Restaurant</a>
+            </li>
+            <li>
+                <a data-latlng="" class="search" href="{{ url('search') }}?place=random">Random</a>
+            </li>
+        </ul>
     </div>
 
     <div class="row">
