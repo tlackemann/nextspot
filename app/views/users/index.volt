@@ -42,20 +42,38 @@
             <h2>Recently Visited</h2>
             {% if places is defined %}
                 {% for place in places %}
-                <div class="caption">
+                
                     {% for like in likes %}
-                        {% if like.place_id is place.id %}
-                        <small class="text-muted">{{ date("F d, Y h:i a", strtotime(like.created_at)) }}</small>
+                        {% if like.place_id is place.id and like.positive is 1 %}
+                        <span class="label label-success">Liked</span>
+                        {% elseif like.place_id is place.id %}
+                        <span class="label label-danger">Liked</span>
                         {% endif %}
                     {% endfor %}
-                    <h3 class="media-heading">{{ place.name }}</h3>
-                </div>
+                    
+                    <h3 class="media-heading">
+                        {{ place.name }}
+                    </h3>
+                    <ol class="breadcrumb">
+                        {% for placecategory in place.placecategories %}
+                        {% for category in placecategory.categories %}
+                            <li><a href="#">{{ category.name }}</a></li>
+                        {% endfor %}
+                        {% endfor %}
+                    </ol>
+                
                 {% endfor %}
+
+                <ul class="pager">
+                    <li class="previous"><a href="#">&larr; Older</a></li>
+                    <li class="next disabled"><a href="#">Newer &rarr;</a></li>
+                </ul>
             {% else %}
                 <p class="text-muted">
                     Nothing yet :(
                 </p>
             {% endif %}
+
         </div>
         <hr class="sm-only"/>
         <div class="col-md-4" id="ad">

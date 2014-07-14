@@ -11,15 +11,34 @@ class SearchController extends ControllerBase
 
     public function indexAction()
     {
-        $user = $this->session->get('auth');
-        $userId = $user['id'];
+
+        $_placeModel = Places::findFirst("id = 1");
+        // foreach($_placeModel->placecategories as $cat)
+        // {
+        //     foreach($cat->categories as $c)
+        //     {
+        //         #var_dump($c->name);
+        //     }
+        // }
+        
+        // Get a list of categories
+        $_categoriesCollection = Categories::find();
+        $_categories = array();
+        foreach($_categoriesCollection as $_category)
+        {
+            $_categories[$_category->code] = $_category;
+        }
+
+        // Get the user
+        $_user = $this->session->get('auth');
+        $_userId = $_user['id'];
 
         // Get a list of likes from this user
-        $likes = Likes::find("user_id = '{$userId}'");
+        $_likes = Likes::find("user_id = '{$_userId}'");
 
         $likedPlaces = array();
         $dislikedPlaces = array();
-        foreach($likes as $like)
+        foreach($_likes as $like)
         {
             if ($like->positive)
             {
@@ -65,11 +84,11 @@ class SearchController extends ControllerBase
                 'pub'
             )
         );
-        $uniqIds = array();
-        $places = Places::find();
-        foreach($places as $place)
+        $_uniqIds = array();
+        $_placesCollection = Places::find();
+        foreach($_placesCollection as $_place)
         {
-            $uniqIds[$place->uniq_id] = $place->id;
+            $_uniqIds[$_place->uniq_id] = $_place->id;
         }
 
         // We need to store new bars into our database and figure out what's the best place
@@ -89,26 +108,71 @@ class SearchController extends ControllerBase
             $points = 0;
 
             // For now, add these places to the database and we'll do stuff with them later
-            if (!isset($uniqIds[$venue->id]))
+            if (!isset($_uniqIds[$venue->id]))
             {
-                $place = new Places();
-                $place->name = $venue->name;
-                $place->uniq_id = $venue->id;
-                $place->address = $venue->location->address;
-                $place->city = $venue->location->city;
-                $place->state = $venue->location->state;
-                $place->zip = $venue->location->postalCode;
-                $place->lat = $lat;
-                $place->lng = $lng;
-                $place->created_at = new Phalcon\Db\RawValue('now()');
-                $place->save();
+                $_placeModel = new Places();
+                $_placeModel->name = $venue->name;
+                $_placeModel->uniq_id = $venue->id;
+                $_placeModel->address = ($venue->location) ? $venue->location->address : null;
+                $_placeModel->city = ($venue->location) ? $venue->location->city : null;
+                $_placeModel->state = ($venue->location) ? $venue->location->state : null;
+                $_placeModel->zip = ($venue->location) ? $venue->location->postalCode : null;
+                $_placeModel->lat = $lat;
+                $_placeModel->lng = $lng;
+                $_placeModel->created_at = new Phalcon\Db\RawValue('now()');
+                $_placeModel->save();
+
+                // Create the categories
+                if ($venue->categories)
+                {   
+                    // Get the current categories of the place
+                    $_placeCategoriesCollection = $_placeModel->placecategories;
+                    $_placeCategories = array();
+                    foreach($_placeCategoriesCollection as $_placeCategory)
+                    {
+                        $_placeCategories[$_placeCategory->category_id] = $_placeCategory;
+                    }
+
+                    foreach($venue->categories as $_category)
+                    {
+                        // Add the new category to our table
+                        if (!isset($_categories[strtolower($_category->shortName)]))
+                        {
+                            $_categoryModel = new Categories();
+                            $_categoryModel->parent_id = $_categories[strtolower($term)]->id; // main categories will always exist
+                            $_categoryModel->code = strtolower($_category->shortName);
+                            $_categoryModel->name = $_category->name;
+                            $_categoryModel->created_at = new Phalcon\Db\RawValue('now()');
+                            $_categoryModel->save();
+
+                            // add the newly created model to the existing array
+                            $_categories[strtolower($_category->shortName)] = $_categoryModel;
+                        }
+
+                        // Add any categories not currently assigned to the place
+                        if (!isset($_placeCategories[$_categories[strtolower($_category->shortName)]->id]))
+                        {
+                            $_categoryModel = $_categories[strtolower($_category->shortName)];
+                            $_placeCategoryModel = new PlaceCategories();
+                            $_placeCategoryModel->category_id = $_categoryModel->id;
+                            $_placeCategoryModel->place_id = $_placeModel->id;
+                            $_placeCategoryModel->created_at = new Phalcon\Db\RawValue('now()');
+                            $_placeCategoryModel->save();
+                        }
+
+                        
+                    }
+
+                    
+
+                }
             }
             else
             {
-                $place = Places::findFirst("uniq_id = '{$venue->id}'");
+                $_placeModel = Places::findFirst("uniq_id = '{$venue->id}'");
             }
 
-            if (!isset($likedPlaces[$place->id]) && !isset($dislikedPlaces[$place->id]))
+            if (!isset($likedPlaces[$_placeModel->id]) && !isset($dislikedPlaces[$_placeModel->id]))
             {
                 // If the category matches, weigh more
                 if (@$venue->categories[0]->name)
@@ -155,15 +219,15 @@ class SearchController extends ControllerBase
 
             if ($venue->id == $recommendationUniqId)
             {
-                $place = $venue;
-                $this->view->place = $place;
+                $_placeModel = $venue;
+                $this->view->place = $_placeModel;
                 $this->view->term = $term;
                 $this->view->address = $address;
                 break;
             }
         }
 
-        #var_dump($place);exit;
+        #var_dump($_placeModel);exit;
         
     }
 }

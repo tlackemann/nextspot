@@ -69,7 +69,7 @@
 			if (this.basePath) {
 				this.url = this.url + this.basePath;
 			}
-			
+
 		},
 
 		this.setBasePath = function(basePath) {
@@ -101,7 +101,7 @@
 						} else {
 							// flash error
 							self.flashMessage(json.message, 'error');
-							
+
 						}
 					})
 					.error(function(data) {
@@ -128,7 +128,7 @@
 					.error(function(data) {
 
 					});
-				
+
 			})
 		},
 
@@ -250,7 +250,7 @@
 			localStorage.setItem(key, value);
 			expireDates[key] = expire;
 			localStorage.setItem(this._cacheKey['expire'], JSON.stringify(expireDates));
-			
+
 			return true;
 		},
 
@@ -261,7 +261,6 @@
 		 */
 		this.getCache = function(key) {
 			var expireDates = (localStorage.getItem(this._cacheKey['expire'])) ? JSON.parse(localStorage.getItem(this._cacheKey['expire'])) : {};
-			console.log(expireDates);
 			if (localStorage.getItem(key) !== undefined && (expireDates[key] > Date.now() || expireDates[key] == undefined)) {
 				return localStorage.getItem(key);
 			}
